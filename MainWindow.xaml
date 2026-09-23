@@ -1,0 +1,402 @@
+<ui:FluentWindow x:Class="SeansSteamIdler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="Sean's Steam Idler" Icon="pack://application:,,,/app.ico" Height="750" Width="750"
+        MinHeight="600" MinWidth="600"
+        WindowStartupLocation="CenterScreen"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica">
+    <ui:FluentWindow.Resources>
+        <Style TargetType="TabItem">
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+        <Style x:Key="SecondaryTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style>
+        <Style x:Key="ContentOnlyTabControl" TargetType="TabControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <ContentPresenter ContentSource="SelectedContent" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="NavPillButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="22,11" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Pill" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Pill" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Pill" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorInvertedBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Border" x:Key="GameCardStyle">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+            <Setter Property="RenderTransform">
+                <Setter.Value><ScaleTransform ScaleX="1" ScaleY="1" /></Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1.012" Duration="0:0:0.12" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1.012" Duration="0:0:0.12" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                </Trigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.12" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.12" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </ui:FluentWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="Sean's Steam Idler" ShowMaximize="False">
+            <ui:TitleBar.Icon>
+                <ui:SymbolIcon Symbol="Games24"/>
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
+        <Grid Grid.Row="1" Margin="24,8,24,22">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" HorizontalAlignment="Center" Padding="4" Margin="0,0,0,14"
+                    CornerRadius="10" Background="{DynamicResource ControlFillColorAltSecondaryBrush}">
+                <StackPanel Orientation="Horizontal">
+                    <ToggleButton x:Name="LibraryNavButton" IsChecked="True"
+                                  Style="{StaticResource NavPillButtonStyle}"
+                                  Click="LibraryNavButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Games24" Margin="0,0,8,0" />
+                            <TextBlock Text="Library" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton x:Name="SettingsNavButton"
+                                  Style="{StaticResource NavPillButtonStyle}"
+                                  Click="SettingsNavButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Settings24" Margin="0,0,8,0" />
+                            <TextBlock Text="Settings" />
+                        </StackPanel>
+                    </ToggleButton>
+                </StackPanel>
+            </Border>
+            <TabControl x:Name="MainTabs" Grid.Row="1" SelectedIndex="0"
+                        Style="{StaticResource ContentOnlyTabControl}"
+                        SelectionChanged="MainTabs_SelectionChanged">
+            <TabItem Header="🎮  Library &amp; Idling">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="32,12,32,28">
+
+                <TextBlock Style="{StaticResource SecondaryTextBlockStyle}"
+                           Text="Logs your account as “playing” selected games so Steam counts the ”play time”.."
+                           TextWrapping="Wrap" Opacity="0.7" Margin="0,0,0,24" FontSize="13"/>
+
+                <ui:CardExpander x:Name="LoginExpander" Icon="{ui:SymbolIcon Person24}" Header="Steam login" IsExpanded="True" Margin="0,0,0,20">
+                    <StackPanel Margin="4,12,4,4">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <ui:Button x:Name="PasswordModeButton" Content="Password" Appearance="Primary"
+                                       Margin="0,0,8,0" Click="PasswordModeButton_Click"/>
+                            <ui:Button x:Name="QrModeButton" Content="QR Code" Click="QrModeButton_Click"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="PasswordPanel">
+                            <ui:TextBox x:Name="UsernameBox" PlaceholderText="Username" Margin="0,0,0,10" Icon="{ui:SymbolIcon Person24}"/>
+                            <ui:PasswordBox x:Name="PasswordBox" PlaceholderText="Password" Margin="0,0,0,10" Icon="{ui:SymbolIcon LockClosed24}"/>
+                            <ui:TextBox x:Name="GuardCodeBox" PlaceholderText="Steam Guard code" Margin="0,0,0,10"
+                                        Visibility="Collapsed" MaxLength="8"/>
+                            <ui:Button x:Name="LoginButton" Content="Log In" Appearance="Primary"
+                                       Icon="{ui:SymbolIcon ArrowEnter20}" Click="LoginButton_Click" HorizontalAlignment="Left"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="QrPanel" Visibility="Collapsed" HorizontalAlignment="Center">
+                            <Image x:Name="QrImage" Width="220" Height="220" Margin="0,4,0,8"/>
+                            <TextBlock Text="Scan with the Steam app, then approve the login" Opacity="0.7" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                            <ui:Button x:Name="QrStartButton" Content="Show QR Code" Appearance="Primary"
+                                       HorizontalAlignment="Center" Click="QrStartButton_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ui:CardExpander>
+
+                <ui:CardExpander x:Name="GamesExpander" Icon="{ui:SymbolIcon Games24}" Header="Your games"
+                                 IsExpanded="True" Opacity="0" RenderTransformOrigin="0.5,0"
+                                 Margin="0,0,0,20">
+                    <ui:CardExpander.RenderTransform>
+                        <TranslateTransform Y="12" />
+                    </ui:CardExpander.RenderTransform>
+                    <Grid Margin="4,14,4,4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock x:Name="GreetingText" Text="Sign in to load your games."
+                                           FontSize="24" FontWeight="SemiBold" />
+                                <TextBlock Style="{StaticResource SecondaryTextBlockStyle}"
+                                           Text="Select owned games to start."
+                                           Opacity="0.65" FontSize="13" Margin="0,4,0,0" />
+                            </StackPanel>
+                            <Border Grid.Column="1" Padding="14,8" CornerRadius="14"
+                                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                    VerticalAlignment="Top" Margin="16,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse x:Name="IdlePulse" Width="8" Height="8" Fill="#44D483"
+                                                 Opacity="0" Margin="0,0,7,0" VerticalAlignment="Center" />
+                                        <ProgressBar x:Name="LoginProgress" Width="18" Height="18"
+                                                     IsIndeterminate="True" Visibility="Collapsed"
+                                                     BorderThickness="0" />
+                                        <TextBlock x:Name="LoginCheckmark" Text="✓"
+                                                   FontSize="20" FontWeight="Bold" Visibility="Collapsed"
+                                                   Margin="0,0,7,0" />
+                                        <TextBlock x:Name="StatusText" Text="Not connected" TextWrapping="Wrap"
+                                                   Opacity="0.8" FontSize="12" MaxWidth="190" />
+                                    </StackPanel>
+                                    <TextBlock x:Name="TimerText" Text="Auto-stop disabled" Opacity="0.7"
+                                               FontSize="11" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Grid Grid.Row="1" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Owned library" FontSize="14" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                            <ui:Button Grid.Column="1" x:Name="DetectGamesButton" Content="Detect Installed Games"
+                                       Icon="{ui:SymbolIcon ArrowSync24}" Click="DetectGamesButton_Click" />
+                        </Grid>
+
+                        <Grid Grid.Row="2" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ui:TextBox Grid.Column="0" x:Name="GameSearchBox" PlaceholderText="Search games by name or AppID"
+                                        Icon="{ui:SymbolIcon Search24}" Margin="0,0,10,0"
+                                        TextChanged="GameSearchBox_TextChanged" />
+                            <ToggleButton Grid.Column="1" x:Name="FavoritesOnlyButton" Content="★ Favorites Only"
+                                          Padding="12,7" Click="FavoritesOnlyButton_Click" />
+                        </Grid>
+
+                        <Grid Grid.Row="3" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="PresetSelector" Grid.Column="0" MinWidth="180"
+                                      SelectionChanged="PresetSelector_SelectionChanged" />
+                            <ui:TextBox x:Name="PresetNameBox" Grid.Column="1" Width="150"
+                                        PlaceholderText="Preset name" Margin="10,0,6,0" />
+                            <ui:Button Grid.Column="2" Content="Save Preset"
+                                       Click="SavePresetButton_Click" Margin="0,0,6,0" />
+                            <ui:Button Grid.Column="3" Content="Delete Preset"
+                                       Click="DeletePresetButton_Click" />
+                        </Grid>
+
+                        <Grid Grid.Row="4">
+                            <ListBox x:Name="GamesList" MinHeight="260" MaxHeight="390"
+                                     BorderThickness="0" Background="Transparent" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                        <Border Padding="16,12" Margin="0,3" CornerRadius="8"
+                                            Style="{StaticResource GameCardStyle}"
+                                                >
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="120" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Image Grid.Column="0" Source="{Binding HeaderImageUrl}" Width="112" Height="52"
+                                                   Stretch="UniformToFill" Margin="0,0,14,0"
+                                                   ImageFailed="GameHeaderImage_ImageFailed" />
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <CheckBox Grid.Column="0" Content="{Binding DisplayName}" IsChecked="{Binding IsSelected}"
+                                                              FontSize="13" Padding="4,0" />
+                                                    <Button Grid.Column="1" Content="{Binding FavoriteGlyph}"
+                                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" Background="Transparent" BorderThickness="0"
+                                                            FontSize="22" Padding="4,0" ToolTip="Toggle favorite"
+                                                            Click="FavoriteButton_Click" />
+                                                </Grid>
+                                                <TextBlock Text="{Binding AppId, StringFormat=AppID: {0}}"
+                                                           Opacity="0.55" FontSize="11" Margin="4,4,0,0" />
+                                                <TextBlock Text="{Binding FormattedPlaytime}" Opacity="0.7"
+                                                           FontSize="11" Margin="4,2,0,0" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            </ListBox>
+                            <Border x:Name="LibraryLoadingPanel" Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                    CornerRadius="8" Padding="24" Visibility="Collapsed">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ProgressBar Width="220" Height="6" IsIndeterminate="True" />
+                                    <TextBlock Text="Fetching games from Steam..." FontSize="14"
+                                               HorizontalAlignment="Center" Margin="0,12,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="LibrarySuccessPanel" Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                    CornerRadius="8" Padding="24" Visibility="Collapsed">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="✓" FontSize="32" FontWeight="Bold"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock x:Name="LibrarySuccessText" FontSize="14"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,18,0">
+                                <TextBlock Text="Auto-stop" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ui:TextBox x:Name="AutoStopHoursBox" Text="0" Width="48" HorizontalContentAlignment="Center"
+                                            ToolTip="Hours" Margin="0,0,4,0" />
+                                <TextBlock Text=":" VerticalAlignment="Center" />
+                                <ui:TextBox x:Name="AutoStopMinutesBox" Text="00" Width="48" HorizontalContentAlignment="Center"
+                                            ToolTip="Minutes" Margin="4,0,0,0" />
+                            </StackPanel>
+                            <ui:Button x:Name="StartIdleButton" Content="Start Idling Selected" Appearance="Primary"
+                                       Icon="{ui:SymbolIcon Play24}" Margin="0,0,10,0" Padding="18,10" Click="StartIdleButton_Click"/>
+                            <ui:Button x:Name="StopIdleButton" Content="Stop All"
+                                       Icon="{ui:SymbolIcon Stop24}" Padding="18,10" Click="StopIdleButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </ui:CardExpander>
+
+                <ui:Card Padding="16">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,8">
+                            <TextBlock Text="Activity console" FontSize="14" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                            <ui:Button Content="Copy Logs" Icon="{ui:SymbolIcon Copy24}"
+                                       Click="CopyLogsButton_Click" HorizontalAlignment="Right" />
+                        </Grid>
+                        <TextBox x:Name="LogBox" Text="" IsReadOnly="True" TextWrapping="Wrap"
+                                 AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Disabled" Height="130"
+                                 Opacity="0.75" FontSize="11" FontFamily="Consolas"
+                                 BorderThickness="0" Background="Transparent"
+                                 IsTabStop="True" />
+                    </StackPanel>
+                </ui:Card>
+
+            </StackPanel>
+        </ScrollViewer>
+            </TabItem>
+            <TabItem Header="⚙  Settings">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="32,22,32,28">
+                        <TextBlock Text="Settings" FontSize="28" FontWeight="SemiBold" />
+                        <ui:Card Padding="20" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="Visual style" FontSize="17" FontWeight="SemiBold" />
+                                <ComboBox x:Name="ThemeSelector" SelectedValuePath="Content"
+                                          SelectionChanged="ThemeSelector_SelectionChanged">
+                                    <ComboBoxItem Content="Windows 11" />
+                                    <ComboBoxItem Content="Windows 10 (best!1)" />
+                                    <ComboBoxItem Content="Windows 7" />
+                                </ComboBox>
+                                <TextBlock Text="Appearance mode" FontSize="14" FontWeight="SemiBold" Margin="0,20,0,4" />
+                                <ComboBox x:Name="ThemeModeSelector" SelectedValuePath="Content"
+                                          SelectionChanged="ThemeModeSelector_SelectionChanged">
+                                    <ComboBoxItem Content="Dark Mode" />
+                                    <ComboBoxItem Content="Light Mode" />
+                                </ComboBox>
+                                <TextBlock Text="Steam Status" FontSize="14" FontWeight="SemiBold" Margin="0,20,0,4" />
+                                <ComboBox x:Name="PersonaStatusSelector" SelectedValuePath="Content"
+                                          SelectionChanged="PersonaStatusSelector_SelectionChanged">
+                                    <ComboBoxItem Content="Invisible (Stealth)" />
+                                    <ComboBoxItem Content="Online" />
+                                    <ComboBoxItem Content="Away" />
+                                    <ComboBoxItem Content="Busy" />
+                                </ComboBox>
+                            </StackPanel>
+                        </ui:Card>
+                        <ui:Card Padding="20" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="Behavior" FontSize="17" FontWeight="SemiBold" />
+                                <CheckBox x:Name="RememberThemeCheckBox" Content="Remember appearance settings"
+                                          IsChecked="True" Margin="0,14,0,0" />
+                                <CheckBox Content="Show installed games before account library loads"
+                                          IsChecked="True" Margin="0,10,0,0" />
+                            </StackPanel>
+                        </ui:Card>
+                        <ui:Card Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="About" FontSize="17" FontWeight="SemiBold" />
+                                <TextBlock Style="{StaticResource SecondaryTextBlockStyle}"
+                                           Text="Sean's Steam Idler&#10;SteamKit2 account library&#10;Do not use if IQ is too low!!!1"
+                                           Opacity="0.65" Margin="0,8,0,0" />
+                            </StackPanel>
+                        </ui:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>
